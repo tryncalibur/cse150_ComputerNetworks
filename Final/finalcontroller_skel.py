@@ -64,100 +64,110 @@ class Final (object):
 
     ip = packet.find('ipv4')
     icmp = packet.find('icmp')
-    portNum = 0
-    """
+    ipport = 0
+
     # IP rules
     if ip:
+      msg.priority = 50
       dst = ip.dstip
+      
+      if icmp:
+        if switch_id == 1:
+          if port_on_switch == 2 or port_on_switch == 3:
+            if dst == '10.2.5.50' or dst == '10.2.6.60' or dst == '10.2.7.70' or dst == '10.2.8.80':
+              self.connection.send(msg)
+              return
+          elif port_on_switch == 4 or port_on_switch == 5:
+            if dst == '10.1.1.10' or dst == '10.1.2.20' or dst == '10.1.3.30' or dst == '10.1.4.40':
+              self.connection.send(msg)
+              return
+          elif port_on_switch == 6:
+            if dst == '10.2.5.50' or dst == '10.2.6.60' or dst == '10.2.7.70' or dst == '10.2.8.80':
+              self.connection.send(msg)
+              return
+          elif port_on_switch == 7:
+            self.connection.send(msg)
+            return         
 
       if switch_id == 1:
-        if dst == '10.3.9.90' and port_on_switch != 6 and port_on_switch != 7:
-          portNum = 1
+        if dst == '10.3.9.90' and port_on_switch < 6:
+          ipport = 1
         elif dst == '10.1.1.10' or dst == '10.1.2.20':
-          portNum = 2
+          ipport = 2
         elif dst == '10.1.3.30' or dst == '10.1.4.40':
-          portNum = 3
+          ipport = 3
         elif dst == '10.2.5.50' or dst == '10.2.6.60':
-          portNum = 4
+          ipport = 4
         elif dst == '10.2.7.70' or dst == '10.2.8.80':
-          portNum = 5
+          ipport = 5
         elif dst == '108.24.31.112':
-          portNum = 6
+          ipport = 6
         elif dst == '106.44.82.103':
-          portNum = 7
+          ipport = 7
 
       elif switch_id == 2:
         if dst == '10.1.3.30' or dst == '10.1.4.40':
-          portNum = 2
+          ipport = 2
         elif dst == '10.1.1.10':
-          portNum = 3
+          ipport = 3
         elif dst == '10.1.2.20':
-          portNum = 4
+          ipport = 4
         else:
-          portNum = 1;
+          ipport = 1
 
       elif switch_id == 3:
         if dst == '10.1.1.10' or dst == '10.1.2.20':
-          port = 2
+          ipport = 2
         elif dst == '10.1.3.30':
-          port = 3
+          ipport = 3
         elif dst == '10.1.4.40':
-          port = 4
+          ipport = 4
         else:
-          portNum = 1
+          ipport = 1
 
       elif switch_id == 4:
         if dst == '10.2.7.70' or dst == '10.2.8.80':
-          portNum = 2
+          ipport = 2
         elif dst == '10.2.5.50':
-          portNum = 3
+          ipport = 3
         elif dst == '10.2.6.60':
-          portNum = 4
+          ipport = 4
         else:
-          portNum = 1;
+          ipport = 1
 
       elif switch_id == 5:
         if dst == '10.2.5.50' or dst == '10.2.6.60':
-          portNum = 2
+          ipport = 2
         elif dst == '10.2.7.70':
-          portNum = 3
+          ipport = 3
         elif dst == '10.2.8.80':
-          portNum = 4
+          ipport = 4
         else:
-          portNum = 1;
+          ipport = 1
         
       elif switch_id == 6:
         if port_on_switch == 1:
-          portNum = 2
+          ipport = 2
         elif port_on_switch == 2:
-          portNum = 1
+          ipport = 1
 
-    #icmp and other protocols
     else:
-      if icmp:
-        # Core
-        portNum = -1
-        if switch_id == 1:
-          if port_on_switch == 1:
-            portNum = -1
-          elif port_on_switch == 2 or port_on_switch == 3:
-            # Selective Ports
-            portNum = -1
-          elif port_on_switch == 4 or port_on_switch == 5:
-            # Selective Ports
-            portNum = -1
-          elif port_on_switch == 6:
-            portNum = 2 #Does it got back to core?
-
+      msg.priority = 49
+      if switch_id == 1:
+        ipport = -1
+      elif switch_id > 1 and switch_id < 6:
+        if port_on_switch == 1 or port_on_switch == 2:
+          msg.actions.append(of.ofp_action_output(port = 3))
+          msg.actions.append(of.ofp_action_output(port = 4))
+        else:
+          ipport = -1
       else:
-        portNum = -1
-      """
-    portNum = -1
-    if portNum > 0:
-      msg.actions.append(of.ofp_action_output(port = portNum))
-    elif portNum == -1:
-      msg.actions.append(of.ofp_action_output(port = of.OFPP_FLOOD))
+        ipport = -1
 
+    if ipport > 0:
+      msg.actions.append(of.ofp_action_output(port = ipport))
+    elif ipport == -1:
+      msg.actions.append(of.ofp_action_output(port = of.OFPP_FLOOD))
     self.connection.send(msg)
 
   def _handle_PacketIn (self, event):
