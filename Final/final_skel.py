@@ -42,9 +42,6 @@ class final_topo(Topo):
     self.addLink(core, f2s1, port1=4, port2=1)
     self.addLink(core, f2s2, port1=5, port2=1)
 
-    self.addLink(f1s1, f1s2, port1=2, port2=2)
-    self.addLink(f2s1, f2s2, port1=2, port2=2)
-
     # Server Link
     self.addLink(data, hS, port1=2, port2=0)
 
