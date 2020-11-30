@@ -20,10 +20,10 @@ class final_topo(Topo):
     h7 = self.addHost('h70',mac='00:00:00:00:00:07',ip='10.2.7.70/24', defaultRoute="h70-eth0")
     h8 = self.addHost('h80',mac='00:00:00:00:00:08',ip='10.2.8.80/24', defaultRoute="h80-eth0")
 
-    hT = self.addHost('hT',mac='00:00:00:00:00:09',ip='108.24.31.112/24', defaultRoute="hT-eth0")
-    hU = self.addHost('hU',mac='00:00:00:00:00:10',ip='106.44.82.103/24', defaultRoute="hU-eth0")
+    hT = self.addHost('h_trust',mac='00:00:00:00:00:09',ip='108.24.31.112/24', defaultRoute="h_trust-eth0")
+    hU = self.addHost('h_untrust',mac='00:00:00:00:00:10',ip='106.44.82.103/24', defaultRoute="h_untrust-eth0")
 
-    hS = self.addHost('hS',mac='00:00:00:00:00:11',ip='10.3.9.90/24', defaultRoute="hS-eth0")
+    hS = self.addHost('h_server',mac='00:00:00:00:00:11',ip='10.3.9.90/24', defaultRoute="h_server-eth0")
 
 
     # Switches
